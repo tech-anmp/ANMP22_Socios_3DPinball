@@ -3221,7 +3221,7 @@ MonoBehaviour:
   lowestFPSLabel: {fileID: 34242502}
   coloring:
   - color: {r: 0.32796383, g: 1, b: 0, a: 1}
-    minimumFPS: 9
+    minimumFPS: 90
   - color: {r: 1, g: 0.82296234, b: 0, a: 1}
     minimumFPS: 60
   - color: {r: 1, g: 0, b: 0, a: 1}
