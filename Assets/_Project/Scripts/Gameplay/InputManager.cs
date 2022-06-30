@@ -8,15 +8,19 @@ public class InputManager : MonoBehaviour
     [SerializeField]
     private bool m_UseUIInputs;
     [SerializeField]
-    private TouchButton m_LeftButton;
+    private TouchButton m_LeftFlipperButton;
     [SerializeField]
-    private TouchButton m_RightButton;
+    private TouchButton m_RightFlipperButton;
+    [SerializeField]
+    private Button m_PlungerButton;
 
     public Action OnTouchScreenLeftStart;
     public Action OnTouchScreenLeftEnd;
 
     public Action OnTouchScreenRightStart;
     public Action OnTouchScreenRightEnd;
+
+    public Action OnPlungerStart;
 
     private float m_ScreenWidth;
     private float m_ScreenHeight;
@@ -28,11 +32,27 @@ public class InputManager : MonoBehaviour
 
         if (m_UseUIInputs)
         {
-            m_LeftButton.OnButtonDown += OnLeftFlipperBtnDown;
-            m_LeftButton.OnButtonUp += OnLeftFlipperBtnUp;
+            m_LeftFlipperButton.OnButtonDown += OnLeftFlipperBtnDown;
+            m_LeftFlipperButton.OnButtonUp += OnLeftFlipperBtnUp;
 
-            m_RightButton.OnButtonDown += OnRightFlipperBtnDown;
-            m_RightButton.OnButtonUp += OnRightFlipperBtnUp;
+            m_RightFlipperButton.OnButtonDown += OnRightFlipperBtnDown;
+            m_RightFlipperButton.OnButtonUp += OnRightFlipperBtnUp;
+
+            m_PlungerButton.onClick.AddListener(OnPlungerBtnClick);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (m_UseUIInputs)
+        {
+            m_LeftFlipperButton.OnButtonDown -= OnLeftFlipperBtnDown;
+            m_LeftFlipperButton.OnButtonUp -= OnLeftFlipperBtnUp;
+
+            m_RightFlipperButton.OnButtonDown -= OnRightFlipperBtnDown;
+            m_RightFlipperButton.OnButtonUp -= OnRightFlipperBtnUp;
+
+            m_PlungerButton.onClick.RemoveListener(OnPlungerBtnClick);
         }
     }
 
@@ -88,5 +108,11 @@ public class InputManager : MonoBehaviour
     {
         if (OnTouchScreenRightEnd != null)
             OnTouchScreenRightEnd();
+    }
+
+    private void OnPlungerBtnClick()
+    {
+        if (OnPlungerStart != null)
+            OnPlungerStart();
     }
 }
