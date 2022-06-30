@@ -22,6 +22,9 @@ public class GameState : State
 
     public override void Enter(State from)
     {
+        //Call Start event
+        WebInterfaceManager.Instance.CallStartGameCallback();
+
         m_GameManager.OnGameOver += OngameOver;
 
         m_InputManager.EnableInputs();
@@ -63,6 +66,6 @@ public class GameState : State
 
     private void OngameOver()
     {
-        StateMachine.SwitchState(m_NextState.GetName());
+        SwitchToNextState();
     }
 }

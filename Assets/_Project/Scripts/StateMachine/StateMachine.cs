@@ -7,7 +7,7 @@ public class StateMachine : MonoBehaviour
     static protected StateMachine m_Instance;
 
     public State[] m_States;
-    public State TopState {  get { if (m_StateStack.Count == 0) return null; return m_StateStack[m_StateStack.Count - 1]; } }
+    public State CurrentState {  get { if (m_StateStack.Count == 0) return null; return m_StateStack[m_StateStack.Count - 1]; } }
 
     protected List<State> m_StateStack = new List<State>();
     protected Dictionary<string, State> m_StateDict = new Dictionary<string, State>();

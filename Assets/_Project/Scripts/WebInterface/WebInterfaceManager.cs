@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -71,7 +69,7 @@ public class WebInterfaceManager : MonoBehaviour
 #if !UNITY_EDITOR && UNITY_WEBGL
     ReadyCallback();
 #endif
-        Debug.Log("Ready !");
+        //Debug.Log("Ready !");
     }
     public void CallStartGameCallback()
     {
@@ -80,7 +78,7 @@ public class WebInterfaceManager : MonoBehaviour
 #if !UNITY_EDITOR && UNITY_WEBGL
     StartCallback();
 #endif
-        Debug.Log("Start !");
+        //Debug.Log("Start !");
     }
     public void CallEndGameCallback()
     {
@@ -92,44 +90,63 @@ public class WebInterfaceManager : MonoBehaviour
 #if !UNITY_EDITOR && UNITY_WEBGL
     EndCallback(data);
 #endif
-        Debug.Log("End !");
+        //Debug.Log("End !");
     }
     #endregion
 
     #region --Javascript to C#--
     public int GetCurrentScore()
     {
-        return 0;
+        return GameManager.Instance.Score;
     }
     public string GetCurrentState()
     {
-        return "";
+        return StateMachine.Instance.CurrentState.GetName();
     }
 
-    public bool RunGame(string pointsObject)
+    public bool RunGame()
     {
+        State currentState = StateMachine.Instance.CurrentState;
+
+        StartState startState = currentState as StartState;
+        if (startState && m_IsReady)
+        {
+            startState.SwitchToNextState();
+            return true;
+        }
+
+        GameOverState gameOverState = currentState as GameOverState;
+        if (gameOverState)
+        {
+            gameOverState.SwitchToNextState();
+            return true;
+        }
+
         return false;
     }
     public bool GoHome()
     {
+        State currentState = StateMachine.Instance.CurrentState;
+        GameOverState gameOverState = currentState as GameOverState;
+        if (gameOverState)
+        {
+            gameOverState.GoBacktoStartGameState();
+            return true;
+        }
+
         return false;
     }
 
 #if UNITY_EDITOR
-    [ContextMenu("Debug_RunGame")]
+    [NaughtyAttributes.Button]
     private void DebugRunGame()
     {
-        //LoyaltyPointsData points = new LoyaltyPointsData();
-        //points.Min = 5;
-        //points.Owned = 100;
-        //string json = JsonUtility.ToJson(points);
-
-        //RunGame(json);
+        RunGame();
     }
-    [ContextMenu("Debug_GoHome")]
+    [NaughtyAttributes.Button]
     private void DebugGoHome()
     {
-        //GoHome();
+        GoHome();
     }
 #endif
     #endregion

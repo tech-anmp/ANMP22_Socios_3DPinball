@@ -76,7 +76,6 @@ public class MultiBumperToy : ToyBase
 
                     //Bumper will not be active until all bumpers are hitted
                     m_Bumpers[i].SetActive(false);
-                    Debug.Log("Added bumper : " + Bumper.gameObject.name);
                 }
             }
         }

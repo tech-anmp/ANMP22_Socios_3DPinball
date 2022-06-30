@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     private Vector3 m_DefaultBallPosition;
     private ToyBase[] m_Toys;
+    private ActiveableWall[] m_ActiveableWalls;
     private int m_Points;
     private int m_RemainingLives;
 
@@ -59,7 +60,7 @@ public class GameManager : MonoBehaviour
 
         m_InputManager.OnPlungerBtnPressed += OnStartPlunger;
 
-        m_ResetTrigger.OnReset += OnResetBall; 
+        m_ResetTrigger.OnReset += OnResetBall;
     }
 
     public void UnInitialize()
@@ -81,6 +82,15 @@ public class GameManager : MonoBehaviour
     {
         m_Points = 0;
         m_RemainingLives = m_MaxLives;
+
+        m_ActiveableWalls = FindObjectsOfType<ActiveableWall>();
+        if (m_ActiveableWalls != null && m_ActiveableWalls.Length > 0)
+        {
+            for (int i = 0; i < m_ActiveableWalls.Length; i++)
+            {
+                m_ActiveableWalls[i].DeActivate();
+            }
+        }
     }
     private void InitializeToys()
     {
@@ -109,7 +119,6 @@ public class GameManager : MonoBehaviour
     private void OnReceivePoints(int Points)
     {
         m_Points += Points;
-        Debug.Log("Global Points : " + m_Points + " - Received Points : " + Points);
     }
 
     private void OnLeftFlip()
@@ -132,7 +141,6 @@ public class GameManager : MonoBehaviour
     private void OnStartPlunger(float PowerRatio)
     {
         float power = Mathf.Lerp(m_PlungerMinPower, m_PlungerMaxPower, PowerRatio);
-        Debug.Log(power);
         m_Plunger.Push(power);
     }
 
@@ -148,6 +156,15 @@ public class GameManager : MonoBehaviour
                     m_Toys[i].ResetToy();
                     m_Toys[i].Activate();
                 }
+            }
+        }
+
+        //Reset activeable walls
+        if (m_ActiveableWalls != null && m_ActiveableWalls.Length > 0)
+        {
+            for (int i = 0; i < m_ActiveableWalls.Length; i++)
+            {
+                m_ActiveableWalls[i].DeActivate();
             }
         }
 

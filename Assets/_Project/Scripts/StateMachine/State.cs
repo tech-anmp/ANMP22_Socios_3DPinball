@@ -13,4 +13,9 @@ public abstract class State : MonoBehaviour
     public abstract void Tick();
 
     public abstract string GetName();
+
+    public void SwitchToNextState()
+    {
+        StateMachine.SwitchState(m_NextState.GetName());
+    }
 }

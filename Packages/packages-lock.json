@@ -9,6 +9,13 @@
       },
       "hash": "225224b9497292f815cdc951dcb069ab3cd26aaa"
     },
+    "com.dbrizov.naughtyattributes": {
+      "version": "https://github.com/dbrizov/NaughtyAttributes.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "8a8fa5a9659a6d63f196391c71e06c4286c8acd7"
+    },
     "com.unity.addressables": {
       "version": "1.16.19",
       "depth": 0,

@@ -11,6 +11,9 @@ public class StartState : State
 
     public override void Enter(State from)
     {
+        //Call Ready event
+        WebInterfaceManager.Instance.CallReadyGameCallback();
+
         m_StartGameButton.interactable = true;
         m_StartGameButton.onClick.AddListener(OnStartGameBtnClicked);
         m_StartPanel.gameObject.SetActive(true);
@@ -35,6 +38,6 @@ public class StartState : State
 
     private void OnStartGameBtnClicked()
     {
-        StateMachine.SwitchState(m_NextState.GetName());
+        SwitchToNextState();
     }
 }
