@@ -6,113 +6,83 @@ using UnityEngine.UI;
 public class InputManager : MonoBehaviour
 {
     [SerializeField]
-    private bool m_UseUIInputs;
-    [SerializeField]
     private TouchButton m_LeftFlipperButton;
     [SerializeField]
     private TouchButton m_RightFlipperButton;
     [SerializeField]
     private Button m_PlungerButton;
+    [SerializeField]
+    private Slider m_PlungerPowerSlider;
 
-    public Action OnTouchScreenLeftStart;
-    public Action OnTouchScreenLeftEnd;
+    public Action OnLeftFlipperBtnDown;
+    public Action OnLeftFlipperBtnUp;
 
-    public Action OnTouchScreenRightStart;
-    public Action OnTouchScreenRightEnd;
+    public Action OnRightFlipperBtnDown;
+    public Action OnRightFlipperBtnUp;
 
-    public Action OnPlungerStart;
+    public Action<float> OnPlungerBtnPressed;
 
-    private float m_ScreenWidth;
-    private float m_ScreenHeight;
+    private float m_DefaultPlungerPower;
 
-    private void Start()
+    public void EnableInputs()
     {
-        m_ScreenWidth = Screen.width;
-        m_ScreenHeight = Screen.height;
+        m_LeftFlipperButton.OnButtonDown += OnLeftFlipperButtonDown;
+        m_LeftFlipperButton.OnButtonUp += OnLeftFlipperButtonUp;
 
-        if (m_UseUIInputs)
-        {
-            m_LeftFlipperButton.OnButtonDown += OnLeftFlipperBtnDown;
-            m_LeftFlipperButton.OnButtonUp += OnLeftFlipperBtnUp;
+        m_RightFlipperButton.OnButtonDown += OnRightFlipperButtonDown;
+        m_RightFlipperButton.OnButtonUp += OnRightFlipperButtonUp;
 
-            m_RightFlipperButton.OnButtonDown += OnRightFlipperBtnDown;
-            m_RightFlipperButton.OnButtonUp += OnRightFlipperBtnUp;
+        m_PlungerButton.onClick.AddListener(OnPlungerButtonPressed);
 
-            m_PlungerButton.onClick.AddListener(OnPlungerBtnClick);
-        }
+        //Initialize values for plunger power slider
+        m_PlungerPowerSlider.minValue = 0.0f;
+        m_PlungerPowerSlider.maxValue = 1.0f;
+        m_PlungerPowerSlider.value = 0.5f;
+        m_DefaultPlungerPower = m_PlungerPowerSlider.value;
+
+        m_PlungerPowerSlider.onValueChanged.AddListener(OnPlungerSliderValueChanged);
+    }
+    public void DisableInputs()
+    {
+        m_LeftFlipperButton.OnButtonDown -= OnLeftFlipperButtonDown;
+        m_LeftFlipperButton.OnButtonUp -= OnLeftFlipperButtonUp;
+
+        m_RightFlipperButton.OnButtonDown -= OnRightFlipperButtonDown;
+        m_RightFlipperButton.OnButtonUp -= OnRightFlipperButtonUp;
+
+        m_PlungerButton.onClick.RemoveListener(OnPlungerButtonPressed);
+
+        m_PlungerPowerSlider.onValueChanged.RemoveListener(OnPlungerSliderValueChanged);
     }
 
-    private void OnDestroy()
+    private void OnLeftFlipperButtonDown()
     {
-        if (m_UseUIInputs)
-        {
-            m_LeftFlipperButton.OnButtonDown -= OnLeftFlipperBtnDown;
-            m_LeftFlipperButton.OnButtonUp -= OnLeftFlipperBtnUp;
-
-            m_RightFlipperButton.OnButtonDown -= OnRightFlipperBtnDown;
-            m_RightFlipperButton.OnButtonUp -= OnRightFlipperBtnUp;
-
-            m_PlungerButton.onClick.RemoveListener(OnPlungerBtnClick);
-        }
-    }
-
-    public void OnFingerDown(LeanFinger LeanFingerData)
-    {
-        //Debug.Log(LeanFingerData.ScreenPosition); 
-    }
-    public void OnFingerDownOnScreen(Vector2 FingerPosition)
-    {
-        if (m_UseUIInputs)
-            return;
-
-        if(FingerPosition.x < m_ScreenWidth/2.0f)
-        {
+        if (OnLeftFlipperBtnDown != null)
             OnLeftFlipperBtnDown();
-        }
-        else if(FingerPosition.x > m_ScreenWidth/2.0f)
-        {
+    }
+    private void OnRightFlipperButtonDown()
+    {
+        if (OnRightFlipperBtnDown != null)
             OnRightFlipperBtnDown();
-        }
     }
-    public void OnFingerUpOnScreen(Vector2 FingerPosition)
+    private void OnLeftFlipperButtonUp()
     {
-        if (m_UseUIInputs)
-            return;
-
-        if (FingerPosition.x < m_ScreenWidth / 2.0f)
-        {
+        if (OnLeftFlipperBtnUp != null)
             OnLeftFlipperBtnUp();
-        }
-        else if (FingerPosition.x > m_ScreenWidth / 2.0f)
-        {
+    }
+    private void OnRightFlipperButtonUp()
+    {
+        if (OnRightFlipperBtnUp != null)
             OnRightFlipperBtnUp();
-        }
+    }
+    private void OnPlungerSliderValueChanged(float Value)
+    {
+        m_DefaultPlungerPower = Value;
     }
 
-    private void OnLeftFlipperBtnDown()
+    private void OnPlungerButtonPressed()
     {
-        if (OnTouchScreenLeftStart != null)
-            OnTouchScreenLeftStart();
-    }
-    private void OnRightFlipperBtnDown()
-    {
-        if (OnTouchScreenRightStart != null)
-            OnTouchScreenRightStart();
-    }
-    private void OnLeftFlipperBtnUp()
-    {
-        if (OnTouchScreenLeftEnd != null)
-            OnTouchScreenLeftEnd();
-    }
-    private void OnRightFlipperBtnUp()
-    {
-        if (OnTouchScreenRightEnd != null)
-            OnTouchScreenRightEnd();
-    }
-
-    private void OnPlungerBtnClick()
-    {
-        if (OnPlungerStart != null)
-            OnPlungerStart();
+        if (OnPlungerBtnPressed != null)
+            OnPlungerBtnPressed(m_DefaultPlungerPower);
     }
 }

@@ -1,13 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Plunger : MonoBehaviour
 {
     [SerializeField]
     private string m_CompareTag = "Ball";
-    [SerializeField, Range(0,100)]
-    private float m_Force = 50.0f;
     [SerializeField]
     private AudioClip m_AudioClip;
 
@@ -42,12 +38,12 @@ public class Plunger : MonoBehaviour
         }
     }
 
-    public void Push()
+    public void Push(float Force)
     {
         if(m_Ball && m_IsReady)
         {
             m_AudioSource.PlayOneShot(m_AudioClip);
-            m_Ball.AddForce(m_Force * transform.forward);
+            m_Ball.AddForce(Force * transform.forward);
             m_IsReady = false;
         }
     }

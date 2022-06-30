@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField]
-    private InputManager m_InputManager;
     [SerializeField]
     private Flipper m_LeftFlipper;
     [SerializeField]
@@ -18,14 +14,27 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private ResetTrigger m_ResetTrigger;
 
+    [SerializeField]
+    private int m_MaxLives = 3;
+    [SerializeField]
+    private float m_PlungerMinPower = 20;
+    [SerializeField]
+    private float m_PlungerMaxPower = 100;
+
     private Vector3 m_DefaultBallPosition;
     private ToyBase[] m_Toys;
     private int m_Points;
+    private int m_RemainingLives;
 
     private static GameManager m_Instance;
     public static GameManager Instance { get => m_Instance; }
 
     public int Score { get => m_Points; }
+    public int RemainingLives { get => m_RemainingLives; }
+
+    public Action OnGameOver;
+
+    private InputManager m_InputManager;
 
     private void Awake()
     {
@@ -33,38 +42,46 @@ public class GameManager : MonoBehaviour
             m_Instance = this;
     }
 
-    private void Start()
+    public void Initialize(InputManager InputManager)
     {
-        m_Points = 0;
-
-        InitializeToys();
-
-        m_InputManager.OnTouchScreenLeftStart += OnLeftFlip;
-        m_InputManager.OnTouchScreenLeftEnd += OnLeftFlipBack;
-
-        m_InputManager.OnTouchScreenRightStart += OnRightFlip;
-        m_InputManager.OnTouchScreenRightEnd += OnRightFlipBack;
-
-        m_InputManager.OnPlungerStart += OnStartPlunger;
-
-        m_ResetTrigger.OnReset += OnResetBall;
+        m_InputManager = InputManager;
 
         m_DefaultBallPosition = m_Ball.transform.position;
+
+        InitializePinball();
+        InitializeToys();
+
+        m_InputManager.OnLeftFlipperBtnDown += OnLeftFlip;
+        m_InputManager.OnLeftFlipperBtnUp += OnLeftFlipBack;
+
+        m_InputManager.OnRightFlipperBtnDown += OnRightFlip;
+        m_InputManager.OnRightFlipperBtnUp += OnRightFlipBack;
+
+        m_InputManager.OnPlungerBtnPressed += OnStartPlunger;
+
+        m_ResetTrigger.OnReset += OnResetBall; 
     }
 
-    private void OnDestroy()
+    public void UnInitialize()
     {
-        m_InputManager.OnTouchScreenLeftStart -= OnLeftFlip;
-        m_InputManager.OnTouchScreenLeftEnd -= OnLeftFlipBack;
+        m_InputManager.OnLeftFlipperBtnDown -= OnLeftFlip;
+        m_InputManager.OnLeftFlipperBtnUp -= OnLeftFlipBack;
 
-        m_InputManager.OnTouchScreenRightStart -= OnRightFlip;
-        m_InputManager.OnTouchScreenRightEnd -= OnRightFlipBack;
+        m_InputManager.OnRightFlipperBtnDown -= OnRightFlip;
+        m_InputManager.OnRightFlipperBtnUp -= OnRightFlipBack;
 
-        m_InputManager.OnPlungerStart -= OnStartPlunger;
+        m_InputManager.OnPlungerBtnPressed -= OnStartPlunger;
 
         m_ResetTrigger.OnReset -= OnResetBall;
+
+        UnInitializeToys();
     }
 
+    private void InitializePinball()
+    {
+        m_Points = 0;
+        m_RemainingLives = m_MaxLives;
+    }
     private void InitializeToys()
     {
         m_Toys = FindObjectsOfType<ToyBase>();
@@ -74,6 +91,17 @@ public class GameManager : MonoBehaviour
             {
                 m_Toys[i].OnSendPoints += OnReceivePoints;
                 m_Toys[i].Activate();
+            }
+        }
+    }
+    private void UnInitializeToys()
+    {
+        if (m_Toys != null && m_Toys.Length > 0)
+        {
+            for (int i = 0; i < m_Toys.Length; i++)
+            {
+                m_Toys[i].OnSendPoints -= OnReceivePoints;
+                m_Toys[i].ResetToy();
             }
         }
     }
@@ -101,9 +129,11 @@ public class GameManager : MonoBehaviour
         m_RightFlipper.FlipBack();
     }
 
-    private void OnStartPlunger()
+    private void OnStartPlunger(float PowerRatio)
     {
-        m_Plunger.Push();
+        float power = Mathf.Lerp(m_PlungerMinPower, m_PlungerMaxPower, PowerRatio);
+        Debug.Log(power);
+        m_Plunger.Push(power);
     }
 
     private void OnResetBall()
@@ -119,6 +149,15 @@ public class GameManager : MonoBehaviour
                     m_Toys[i].Activate();
                 }
             }
+        }
+
+        //Check remaining lives
+        m_RemainingLives -= 1;
+        if (m_RemainingLives <= 0)
+        {
+            //GameOver
+            if (OnGameOver != null)
+                OnGameOver();
         }
 
         //Reset ball position
