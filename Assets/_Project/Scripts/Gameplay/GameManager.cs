@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Main Components")]
     [SerializeField]
     private Flipper m_LeftFlipper;
     [SerializeField]
@@ -14,8 +15,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private ResetTrigger m_ResetTrigger;
 
+    [Header("Lives")]
     [SerializeField]
     private int m_MaxLives = 3;
+
+    [Header("Plunger")]
     [SerializeField]
     private float m_PlungerMinPower = 20;
     [SerializeField]
@@ -23,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     private Vector3 m_DefaultBallPosition;
     private ToyBase[] m_Toys;
+    private BonusComponentBase[] m_Bonus;
     private ActiveableWall[] m_ActiveableWalls;
     private int m_Points;
     private int m_RemainingLives;
@@ -34,6 +39,7 @@ public class GameManager : MonoBehaviour
     public int RemainingLives { get => m_RemainingLives; }
 
     public Action OnGameOver;
+    public Action OnBallReset;
 
     private InputManager m_InputManager;
 
@@ -51,6 +57,7 @@ public class GameManager : MonoBehaviour
 
         InitializePinball();
         InitializeToys();
+        InitializeBonus();
 
         m_InputManager.OnLeftFlipperBtnDown += OnLeftFlip;
         m_InputManager.OnLeftFlipperBtnUp += OnLeftFlipBack;
@@ -62,7 +69,6 @@ public class GameManager : MonoBehaviour
 
         m_ResetTrigger.OnReset += OnResetBall;
     }
-
     public void UnInitialize()
     {
         m_InputManager.OnLeftFlipperBtnDown -= OnLeftFlip;
@@ -75,6 +81,7 @@ public class GameManager : MonoBehaviour
 
         m_ResetTrigger.OnReset -= OnResetBall;
 
+        UnInitializeBonus();
         UnInitializeToys();
     }
 
@@ -92,9 +99,33 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    private void InitializeBonus()
+    {
+        m_Bonus = GetComponentsInChildren<BonusComponentBase>();// FindObjectsOfType<BonusComponentBase>();
+        if(m_Bonus != null && m_Bonus.Length > 0)
+        {
+            for (int i = 0; i < m_Bonus.Length; i++)
+            {
+                m_Bonus[i].OnSendBonus += OnReceiveBonus;
+                m_Bonus[i].Activate();
+            }
+        }
+    }
+    private void UnInitializeBonus()
+    {
+        m_Bonus = FindObjectsOfType<BonusComponentBase>();
+        if (m_Bonus != null && m_Bonus.Length > 0)
+        {
+            for (int i = 0; i < m_Bonus.Length; i++)
+            {
+                m_Bonus[i].OnSendBonus -= OnReceiveBonus;
+                m_Bonus[i].DeActivate();
+            }
+        }
+    }
     private void InitializeToys()
     {
-        m_Toys = FindObjectsOfType<ToyBase>();
+        m_Toys = GetComponentsInChildren<ToyBase>();// FindObjectsOfType<ToyBase>();
         if (m_Toys != null && m_Toys.Length > 0)
         {
             for (int i = 0; i < m_Toys.Length; i++)
@@ -116,7 +147,11 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void OnReceivePoints(int Points)
+    private void OnReceivePoints(ToyBase Toy, int Points)
+    {
+        m_Points += Points;
+    }
+    private void OnReceiveBonus(int Points)
     {
         m_Points += Points;
     }
@@ -146,6 +181,9 @@ public class GameManager : MonoBehaviour
 
     private void OnResetBall()
     {
+        if (OnBallReset != null)
+            OnBallReset();
+
         //Reset disabled toys on ball reset
         if (m_Toys != null && m_Toys.Length > 0)
         {
@@ -155,6 +193,19 @@ public class GameManager : MonoBehaviour
                 {
                     m_Toys[i].ResetToy();
                     m_Toys[i].Activate();
+                }
+            }
+        }
+
+        //Reset disabled bonus components
+        if (m_Bonus != null && m_Bonus.Length > 0)
+        {
+            for (int i = 0; i < m_Bonus.Length; i++)
+            {
+                if(!m_Bonus[i].IsActivated)
+                {
+                    m_Bonus[i].ResetComponent();
+                    m_Bonus[i].Activate();
                 }
             }
         }

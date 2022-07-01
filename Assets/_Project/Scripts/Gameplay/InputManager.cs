@@ -1,4 +1,3 @@
-using Lean.Touch;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +22,7 @@ public class InputManager : MonoBehaviour
     public Action<float> OnPlungerBtnPressed;
 
     private float m_DefaultPlungerPower;
+    private bool m_AreInputsEnabled;
 
     public void EnableInputs()
     {
@@ -41,9 +41,13 @@ public class InputManager : MonoBehaviour
         m_DefaultPlungerPower = m_PlungerPowerSlider.value;
 
         m_PlungerPowerSlider.onValueChanged.AddListener(OnPlungerSliderValueChanged);
+
+        m_AreInputsEnabled = true;
     }
     public void DisableInputs()
     {
+        m_AreInputsEnabled = false;
+
         m_LeftFlipperButton.OnButtonDown -= OnLeftFlipperButtonDown;
         m_LeftFlipperButton.OnButtonUp -= OnLeftFlipperButtonUp;
 
@@ -84,5 +88,26 @@ public class InputManager : MonoBehaviour
     {
         if (OnPlungerBtnPressed != null)
             OnPlungerBtnPressed(m_DefaultPlungerPower);
+    }
+
+    private void Update()
+    {
+#if UNITY_EDITOR
+        if (!m_AreInputsEnabled)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Q))
+            OnLeftFlipperButtonDown();
+        else if (Input.GetKeyUp(KeyCode.Q))
+            OnLeftFlipperButtonUp();
+
+        if (Input.GetKeyDown(KeyCode.D))
+            OnRightFlipperButtonDown();
+        else if (Input.GetKeyUp(KeyCode.D))
+            OnRightFlipperButtonUp();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            OnPlungerButtonPressed();
+#endif
     }
 }

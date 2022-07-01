@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public abstract class MultiToyBase<T> : ToyBase where T : ToyComponentBase
+public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
 {
     protected List<ToyComponentBase> m_HittedComponents = new List<ToyComponentBase>();
 
