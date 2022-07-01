@@ -1,27 +1,26 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MultiBumperToy : ToyBase
+public class MultiBumperToy : MultiToyBase<Bumper>
 {
     [SerializeField]
     private Bumper[] m_Bumpers;
 
-    private List<Bumper> m_HittedBumpers = new List<Bumper>();  
+    //private List<Bumper> m_HittedBumpers = new List<Bumper>();  
 
-    private void Update()
+    /*protected override void Update()
     {
         if (!m_IsActivated)
             return;
 
-        //TODO : Check if all bumpers were hitted, if so, then send points and deactivate
+        // Check if all bumpers were hitted, if so, then send points and deactivate
         if (m_HittedBumpers.Count == m_Bumpers.Length)
         {
             SendPoints();
             DeActivate();
         }
-    }
+    }*/
 
-    public override void Activate()
+    /*public override void Activate()
     {
         if (m_Bumpers != null && m_Bumpers.Length > 0)
         {
@@ -33,9 +32,9 @@ public class MultiBumperToy : ToyBase
         }
 
         m_IsActivated = true;
-    }
+    }*/
 
-    public override void DeActivate()
+    /*public override void DeActivate()
     {
         m_IsActivated = false;
 
@@ -47,9 +46,9 @@ public class MultiBumperToy : ToyBase
                 m_Bumpers[i].SetActive(false);
             }
         }
-    }
+    }*/
 
-    public override void ResetToy()
+    /*public override void ResetToy()
     {
         m_IsActivated = false;
         m_HittedBumpers.Clear();
@@ -59,25 +58,34 @@ public class MultiBumperToy : ToyBase
             for (int i = 0; i < m_Bumpers.Length; i++)
             {
                 m_Bumpers[i].OnHit -= OnBumperHitted;
-                m_Bumpers[i].ResetBumper();
+                m_Bumpers[i].ResetToyComponent();
             }
         }
-    }
+    }*/
 
-    private void OnBumperHitted(Bumper Bumper)
+    /*private void OnBumperHitted(ToyComponentBase ToyComponent)
     {
+        Bumper hittedBumper = ToyComponent as Bumper;
+        if (hittedBumper == null)
+            return;
+
         if (m_Bumpers != null && m_Bumpers.Length > 0)
         {
             for (int i = 0; i < m_Bumpers.Length; i++)
             {
-                if (m_Bumpers[i] == Bumper && !m_HittedBumpers.Contains(Bumper))
+                if (m_Bumpers[i] == hittedBumper && !m_HittedBumpers.Contains(hittedBumper))
                 {
-                    m_HittedBumpers.Add(Bumper);
+                    m_HittedBumpers.Add(hittedBumper);
 
                     //Bumper will not be active until all bumpers are hitted
                     m_Bumpers[i].SetActive(false);
                 }
             }
         }
+    }*/
+
+    public override Bumper[] GetToyComponents()
+    {
+        return m_Bumpers;
     }
 }
