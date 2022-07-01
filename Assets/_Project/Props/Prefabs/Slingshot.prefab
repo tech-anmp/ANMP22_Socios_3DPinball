@@ -76,11 +76,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d14a4684216da6141af024196231be42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SlingshotForce: 1.5
   m_CompareTag: Ball
+  m_AudioClip: {fileID: 8300000, guid: 6c4d56491c9e44f78984f51e2148e917, type: 3}
+  m_SlingshotForce: 1.5
   m_MinForce: 0.3
   m_RelativeVelocityMax: 3
-  m_AudioClip: {fileID: 8300000, guid: 6c4d56491c9e44f78984f51e2148e917, type: 3}
 --- !u!82 &3799592563503371264
 AudioSource:
   m_ObjectHideFlags: 0
@@ -376,16 +376,20 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.000000002813587
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.016400002
+      value: -0.013066668
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -3.4951847e-10
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
       propertyPath: m_LocalRotation.w
@@ -423,6 +427,10 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 03c04729ac88aaf4097c61eb5de86a02, type: 2}
+    - target: {fileID: 6400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
+      propertyPath: m_Convex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6400000, guid: f1caf789dc1547c44b744b800fb80a44, type: 3}
       propertyPath: m_Material
       value: 

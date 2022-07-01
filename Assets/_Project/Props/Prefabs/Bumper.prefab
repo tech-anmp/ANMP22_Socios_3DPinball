@@ -98,10 +98,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a36eedc941ce27543b1cae8e120b550a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_BumperForce: 1
   m_CompareTag: Ball
-  m_ActivationIndicator: {fileID: 7720958267796194003}
   m_AudioClip: {fileID: 8300000, guid: a31117bb05dc843b7a1cdcc17df92e94, type: 3}
+  m_BumperForce: 1
+  m_ActivationIndicator: {fileID: 7720958267796194003}
 --- !u!136 &4389305772288163426
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -244,7 +244,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 4294967295
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &6390267194525555940
 Transform:
