@@ -20,11 +20,8 @@ public class DropTarget : ToyComponentBase
         if (!Collision.gameObject.CompareTag(m_CompareTag))
             return;
 
-        if (m_IsActive)
-        {
-            if (OnHit != null)
-                OnHit(this);
-        }
+        if (OnHit != null)
+            OnHit(this);
 
         PlayAudioClip();
 

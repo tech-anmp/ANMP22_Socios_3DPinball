@@ -13,6 +13,7 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
         if (m_HittedComponents.Count == GetToyComponents().Length)
         {
             SendPoints();
+            PlayAudioClip();
             DeActivate();
         }
     }
@@ -62,17 +63,17 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
 
     protected virtual void OnToyComponentHitted(ToyComponentBase ToyComponent)
     {
-        T hittedBumper = ToyComponent as T;
-        if (hittedBumper == null)
+        T hittedObject = ToyComponent as T;
+        if (hittedObject == null)
             return;
 
         if (GetToyComponents() != null && GetToyComponents().Length > 0)
         {
             for (int i = 0; i < GetToyComponents().Length; i++)
             {
-                if (GetToyComponents()[i] == hittedBumper && !m_HittedComponents.Contains(hittedBumper))
+                if (GetToyComponents()[i] == hittedObject && !m_HittedComponents.Contains(hittedObject))
                 {
-                    m_HittedComponents.Add(hittedBumper);
+                    m_HittedComponents.Add(hittedObject);
 
                     //ToyComponent will not be active until all bumpers are hitted
                     GetToyComponents()[i].SetActive(false);

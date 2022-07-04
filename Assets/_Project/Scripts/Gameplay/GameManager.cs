@@ -25,8 +25,17 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private float m_PlungerMaxPower = 100;
 
+    [Header("Difficulty")]
+    [SerializeField]
+    private bool m_DeActivateToysOnBallReset;
+
+    [Header("Audio")]
+    [SerializeField]
+    private AudioClip m_LooseBallAudioClip;
+
     private Vector3 m_DefaultBallPosition;
     private ToyBase[] m_Toys;
+    private ToyComponentBase[] m_ToyComponents;
     private BonusComponentBase[] m_Bonus;
     private ActiveableWall[] m_ActiveableWalls;
     private int m_Points;
@@ -42,11 +51,17 @@ public class GameManager : MonoBehaviour
     public Action OnBallReset;
 
     private InputManager m_InputManager;
+    private AudioSource m_AudioSource;
 
     private void Awake()
     {
         if (m_Instance == null)
             m_Instance = this;
+    }
+
+    private void Start()
+    {
+        m_AudioSource = GetComponent<AudioSource>();
     }
 
     public void Initialize(InputManager InputManager)
@@ -56,6 +71,7 @@ public class GameManager : MonoBehaviour
         m_DefaultBallPosition = m_Ball.transform.position;
 
         InitializePinball();
+        InitializeToyComponents();
         InitializeToys();
         InitializeBonus();
 
@@ -83,6 +99,7 @@ public class GameManager : MonoBehaviour
 
         UnInitializeBonus();
         UnInitializeToys();
+        UnInitializeToyComponents();
     }
 
     private void InitializePinball()
@@ -102,11 +119,11 @@ public class GameManager : MonoBehaviour
     private void InitializeBonus()
     {
         m_Bonus = GetComponentsInChildren<BonusComponentBase>();// FindObjectsOfType<BonusComponentBase>();
-        if(m_Bonus != null && m_Bonus.Length > 0)
+        if (m_Bonus != null && m_Bonus.Length > 0)
         {
             for (int i = 0; i < m_Bonus.Length; i++)
             {
-                m_Bonus[i].OnSendBonus += OnReceiveBonus;
+                m_Bonus[i].OnSendBonus += OnReceiveBonusPoints;
                 m_Bonus[i].Activate();
             }
         }
@@ -118,7 +135,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < m_Bonus.Length; i++)
             {
-                m_Bonus[i].OnSendBonus -= OnReceiveBonus;
+                m_Bonus[i].OnSendBonus -= OnReceiveBonusPoints;
                 m_Bonus[i].DeActivate();
             }
         }
@@ -130,7 +147,7 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < m_Toys.Length; i++)
             {
-                m_Toys[i].OnSendPoints += OnReceivePoints;
+                m_Toys[i].OnSendPoints += OnReceiveToyPoints;
                 m_Toys[i].Activate();
             }
         }
@@ -141,17 +158,42 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < m_Toys.Length; i++)
             {
-                m_Toys[i].OnSendPoints -= OnReceivePoints;
+                m_Toys[i].OnSendPoints -= OnReceiveToyPoints;
                 m_Toys[i].ResetToy();
             }
         }
     }
+    private void InitializeToyComponents()
+    {
+        m_ToyComponents = FindObjectsOfType<ToyComponentBase>();
+        if(m_ToyComponents != null && m_ToyComponents.Length > 0)
+        {
+            for (int i = 0; i < m_ToyComponents.Length; i++)
+            {
+                m_ToyComponents[i].OnHit += OnReceiveToyComponentPoints;
+            }
+        }
+    }
+    private void UnInitializeToyComponents()
+    {
+        if (m_ToyComponents != null && m_ToyComponents.Length > 0)
+        {
+            for (int i = 0; i < m_ToyComponents.Length; i++)
+            {
+                m_ToyComponents[i].OnHit -= OnReceiveToyComponentPoints;
+            }
+        }
+    }
 
-    private void OnReceivePoints(ToyBase Toy, int Points)
+    private void OnReceiveToyComponentPoints(ToyComponentBase ToyComponent)
+    {
+        if(ToyComponent) m_Points += ToyComponent.Points;
+    }
+    private void OnReceiveToyPoints(ToyBase Toy, int Points)
     {
         m_Points += Points;
     }
-    private void OnReceiveBonus(int Points)
+    private void OnReceiveBonusPoints(int Points)
     {
         m_Points += Points;
     }
@@ -184,12 +226,14 @@ public class GameManager : MonoBehaviour
         if (OnBallReset != null)
             OnBallReset();
 
+        m_AudioSource.PlayOneShot(m_LooseBallAudioClip);
+
         //Reset disabled toys on ball reset
         if (m_Toys != null && m_Toys.Length > 0)
         {
             for (int i = 0; i < m_Toys.Length; i++)
             {
-                if (!m_Toys[i].IsActivated)
+                if (!m_Toys[i].IsActivated || m_DeActivateToysOnBallReset)
                 {
                     m_Toys[i].ResetToy();
                     m_Toys[i].Activate();

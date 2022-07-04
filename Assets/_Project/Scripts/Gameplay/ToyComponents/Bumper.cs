@@ -24,13 +24,10 @@ public class Bumper : ToyComponentBase
 
         ContactPoint[] tmpContact = Collision.contacts;
 
-        if(m_IsActive)
-        {
-            if (m_ActivationIndicator) m_ActivationIndicator.SetActive(true);
+        if (m_IsActive && m_ActivationIndicator) m_ActivationIndicator.SetActive(true);
 
-            if (OnHit != null)
-                OnHit(this);
-        }
+        if (OnHit != null)
+            OnHit(this);
 
         PlayAudioClip();
 

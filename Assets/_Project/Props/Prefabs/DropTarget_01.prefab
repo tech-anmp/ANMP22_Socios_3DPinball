@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CompareTag: Ball
+  m_Points: 5
   m_AudioClip: {fileID: 8300000, guid: 028fc833e64fa4a8ebba9f9e3ffdf05a, type: 3}
   m_DropTarget: {fileID: 7285101167553669387}
 --- !u!82 &3252879469810069504

@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public class BonusComponentBase : MonoBehaviour
 {
     [Header("Toys")]
@@ -13,12 +13,22 @@ public class BonusComponentBase : MonoBehaviour
     [SerializeField]
     private int m_PointsToGive = 500;
 
+    [Header("Audio")]
+    [SerializeField]
+    private AudioClip m_AudioClip;
+
     private List<ToyBase> m_ReceivedToys = new List<ToyBase>();
+    private AudioSource m_AudioSource;
     protected bool m_IsActivated;
 
     public Action<int> OnSendBonus;
 
     public bool IsActivated { get => m_IsActivated; }
+
+    protected virtual void Start()
+    {
+        m_AudioSource = GetComponent<AudioSource>();
+    }
 
     private void Update()
     {
@@ -30,6 +40,7 @@ public class BonusComponentBase : MonoBehaviour
             if (OnSendBonus != null)
                 OnSendBonus(m_PointsToGive);
 
+            PlayAudioClip();
             DeActivate();
         }
     }
@@ -70,5 +81,10 @@ public class BonusComponentBase : MonoBehaviour
     {
         m_IsActivated = false;
         m_ReceivedToys.Clear();
+    }
+
+    public void PlayAudioClip()
+    {
+        m_AudioSource.PlayOneShot(m_AudioClip);
     }
 }
