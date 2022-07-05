@@ -69,6 +69,7 @@ public class GameManager : MonoBehaviour
         m_InputManager = InputManager;
 
         m_DefaultBallPosition = m_Ball.transform.position;
+        m_Ball.GetComponent<Rigidbody>().isKinematic = false;
 
         InitializePinball();
         InitializeToyComponents();
