@@ -17,8 +17,13 @@ public class ToyComponentBase : MonoBehaviour
     [SerializeField]
     protected AudioClip m_AudioClip;
 
-    protected bool m_IsActive;
+    //[Header("Difficulty")]
+    //[SerializeField]
+    //private bool m_DisableOnHit;
+
+    protected bool m_IsActivated;
     protected AudioSource m_AudioSource;
+    protected IActionBase[] m_Actions;
 
     public Action<ToyComponentBase> OnHit;
 
@@ -27,6 +32,7 @@ public class ToyComponentBase : MonoBehaviour
     protected virtual void Start()
     {
         m_AudioSource = GetComponent<AudioSource>();
+        m_Actions =  GetComponentsInChildren<IActionBase>();
     }
 
     protected virtual void OnCollisionEnter(Collision Collision) { }
@@ -36,10 +42,35 @@ public class ToyComponentBase : MonoBehaviour
         m_AudioSource.PlayOneShot(m_AudioClip);
     }
 
-    public virtual void ResetToyComponent() { }
-
-    public virtual void SetActive(bool IsActive)
+    public virtual void ResetToyComponent() 
     {
-        m_IsActive = IsActive;
+        StopActions();
+    }
+
+    public virtual void SetActive(bool Value)
+    {
+        m_IsActivated = Value;
+    }
+
+    public virtual void StartActions()
+    {
+        if(m_Actions != null && m_Actions.Length > 0)
+        {
+            for (int i = 0; i < m_Actions.Length; i++)
+            {
+                m_Actions[i].StartAction();
+            }
+        }
+    }
+
+    public virtual void StopActions()
+    {
+        if (m_Actions != null && m_Actions.Length > 0)
+        {
+            for (int i = 0; i < m_Actions.Length; i++)
+            {
+                m_Actions[i].StopAction();
+            }
+        }
     }
 }

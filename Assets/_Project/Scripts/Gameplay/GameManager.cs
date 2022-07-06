@@ -18,16 +18,14 @@ public class GameManager : MonoBehaviour
     [Header("Lives")]
     [SerializeField]
     private int m_MaxLives = 3;
+    [SerializeField]
+    private int m_MinPointsForExtraLife = 500;
 
     [Header("Plunger")]
     [SerializeField]
     private float m_PlungerMinPower = 20;
     [SerializeField]
     private float m_PlungerMaxPower = 100;
-
-    [Header("Difficulty")]
-    [SerializeField]
-    private bool m_DeActivateToysOnBallReset;
 
     [Header("Audio")]
     [SerializeField]
@@ -39,6 +37,7 @@ public class GameManager : MonoBehaviour
     private BonusComponentBase[] m_Bonus;
     private ActiveableWall[] m_ActiveableWalls;
     private int m_Points;
+    private int m_TargetPointsBeforeExtraLife;
     private int m_RemainingLives;
 
     private static GameManager m_Instance;
@@ -106,6 +105,7 @@ public class GameManager : MonoBehaviour
     private void InitializePinball()
     {
         m_Points = 0;
+        m_TargetPointsBeforeExtraLife = m_MinPointsForExtraLife;
         m_RemainingLives = m_MaxLives;
 
         m_ActiveableWalls = FindObjectsOfType<ActiveableWall>();
@@ -160,7 +160,7 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < m_Toys.Length; i++)
             {
                 m_Toys[i].OnSendPoints -= OnReceiveToyPoints;
-                m_Toys[i].ResetToy();
+                m_Toys[i].DeActivate();
             }
         }
     }
@@ -188,15 +188,25 @@ public class GameManager : MonoBehaviour
 
     private void OnReceiveToyComponentPoints(ToyComponentBase ToyComponent)
     {
-        if(ToyComponent) m_Points += ToyComponent.Points;
+        if (ToyComponent) UpdateScore(ToyComponent.Points);
     }
     private void OnReceiveToyPoints(ToyBase Toy, int Points)
     {
-        m_Points += Points;
+        UpdateScore(Points);
     }
     private void OnReceiveBonusPoints(int Points)
     {
+        UpdateScore(Points);
+    }
+
+    private void UpdateScore(int Points)
+    {
         m_Points += Points;
+        if(m_Points >= m_TargetPointsBeforeExtraLife)
+        {
+            m_TargetPointsBeforeExtraLife += m_MinPointsForExtraLife;
+            m_RemainingLives += 1;
+        }
     }
 
     private void OnLeftFlip()
@@ -234,10 +244,9 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < m_Toys.Length; i++)
             {
-                if (!m_Toys[i].IsActivated || m_DeActivateToysOnBallReset)
+                if (!m_Toys[i].IsActivated || m_Toys[i].RestartOnBallReset)
                 {
-                    m_Toys[i].ResetToy();
-                    m_Toys[i].Activate();
+                    m_Toys[i].Restart();
                 }
             }
         }
@@ -247,10 +256,9 @@ public class GameManager : MonoBehaviour
         {
             for (int i = 0; i < m_Bonus.Length; i++)
             {
-                if(!m_Bonus[i].IsActivated)
+                if(!m_Bonus[i].IsActivated || m_Bonus[i].RestartOnBallReset)
                 {
-                    m_Bonus[i].ResetComponent();
-                    m_Bonus[i].Activate();
+                    m_Bonus[i].Restart();
                 }
             }
         }

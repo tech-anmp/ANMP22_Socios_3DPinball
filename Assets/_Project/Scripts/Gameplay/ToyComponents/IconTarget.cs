@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class IconTarget : ToyComponentBase
@@ -12,18 +10,7 @@ public class IconTarget : ToyComponentBase
     {
         base.Start();
 
-        MeshRenderer mr = GetComponent<MeshRenderer>();
-        List<Material> mats = new List<Material>();
-        mr.GetMaterials(mats);
-
-        for (int i = 0; i < mats.Count; i++)
-        {
-            string matName = mats[i].name.Replace(" (Instance)", "");
-            if (matName == m_MaterialRef.name)
-            {
-                mr.materials[i].SetInt("_UseEmissive", 0);
-            }
-        }
+        ResetToyComponent();
     }
 
     protected virtual void OnTriggerEnter(Collider Collision)
@@ -31,19 +18,14 @@ public class IconTarget : ToyComponentBase
         if (!Collision.gameObject.CompareTag(m_CompareTag))
             return;
 
-        if (OnHit != null)
-            OnHit(this);
+        if (m_IsActivated)
+        {
+            StartActions();
 
-        ChangeIcon();
-    }
+            if (OnHit != null)
+                OnHit(this);
 
-    public override void ResetToyComponent()
-    {
-        base.ResetToyComponent();
-    }
-
-    private void ChangeIcon()
-    {
-
+            PlayAudioClip();
+        }
     }
 }

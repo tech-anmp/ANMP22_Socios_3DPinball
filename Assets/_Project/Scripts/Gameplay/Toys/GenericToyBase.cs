@@ -1,7 +1,14 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
 {
+    [Header("Debug Gizmos")]
+    [SerializeField]
+    private Color m_GizmosColor = Color.blue;
+    [SerializeField]
+    private float m_GizmosSize = 0.05f;
+
     protected List<ToyComponentBase> m_HittedComponents = new List<ToyComponentBase>();
 
     protected virtual void Update()
@@ -14,7 +21,11 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
         {
             SendPoints();
             PlayAudioClip();
-            DeActivate();
+
+            if (m_ResetOnCompleted)
+                Restart();
+            else
+                DeActivate();
         }
     }
 
@@ -35,20 +46,6 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
     public override void DeActivate()
     {
         m_IsActivated = false;
-
-        if (GetToyComponents() != null && GetToyComponents().Length > 0)
-        {
-            for (int i = 0; i < GetToyComponents().Length; i++)
-            {
-                GetToyComponents()[i].OnHit -= OnToyComponentHitted;
-                GetToyComponents()[i].SetActive(false);
-            }
-        }
-    }
-
-    public override void ResetToy()
-    {
-        m_IsActivated = false;
         m_HittedComponents.Clear();
 
         if (GetToyComponents() != null && GetToyComponents().Length > 0)
@@ -56,9 +53,16 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
             for (int i = 0; i < GetToyComponents().Length; i++)
             {
                 GetToyComponents()[i].OnHit -= OnToyComponentHitted;
+                GetToyComponents()[i].SetActive(false);
                 GetToyComponents()[i].ResetToyComponent();
             }
         }
+    }
+
+    public override void Restart()
+    {
+        DeActivate();
+        Activate();
     }
 
     protected virtual void OnToyComponentHitted(ToyComponentBase ToyComponent)
@@ -83,4 +87,16 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
     }
 
     public abstract T[] GetToyComponents();
+
+    protected void OnDrawGizmosSelected()
+    {
+        if (GetToyComponents() != null && GetToyComponents().Length > 0)
+        {
+            for (int i = 0; i < GetToyComponents().Length; i++)
+            {
+                Gizmos.color = m_GizmosColor;
+                Gizmos.DrawSphere(GetToyComponents()[i].transform.position, m_GizmosSize);
+            }
+        }
+    }
 }

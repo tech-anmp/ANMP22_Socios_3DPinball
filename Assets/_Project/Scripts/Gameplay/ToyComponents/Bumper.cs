@@ -6,10 +6,6 @@ public class Bumper : ToyComponentBase
     [SerializeField]
     private float m_BumperForce = 0.3f;
 
-    [Header("Display")]
-    [SerializeField]
-    private GameObject m_ActivationIndicator;
-
     protected override void Start()
     {
         base.Start();
@@ -24,7 +20,8 @@ public class Bumper : ToyComponentBase
 
         ContactPoint[] tmpContact = Collision.contacts;
 
-        if (m_IsActive && m_ActivationIndicator) m_ActivationIndicator.SetActive(true);
+        if (m_IsActivated)
+            StartActions();
 
         if (OnHit != null)
             OnHit(this);
@@ -42,12 +39,5 @@ public class Bumper : ToyComponentBase
             // Add Force
             rb.AddForce(-1 * contact.normal * m_BumperForce, ForceMode.VelocityChange);
         }
-    }
-
-    public override void ResetToyComponent()
-    {
-        base.ResetToyComponent();
-
-        if (m_ActivationIndicator) m_ActivationIndicator.SetActive(false);
     }
 }

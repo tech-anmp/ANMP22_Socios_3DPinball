@@ -5,6 +5,12 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class BonusComponentBase : MonoBehaviour
 {
+    [Header("Difficulty")]
+    [SerializeField]
+    protected bool m_ResetOnBallReset;
+    [SerializeField]
+    protected bool m_ResetOnCompleted;
+
     [Header("Toys")]
     [SerializeField]
     private ToyBase[] m_Toys;
@@ -24,6 +30,8 @@ public class BonusComponentBase : MonoBehaviour
     public Action<int> OnSendBonus;
 
     public bool IsActivated { get => m_IsActivated; }
+    public bool RestartOnBallReset { get => m_ResetOnBallReset; }
+    public bool RestartOnCompleted { get => m_ResetOnCompleted; }
 
     protected virtual void Start()
     {
@@ -41,7 +49,11 @@ public class BonusComponentBase : MonoBehaviour
                 OnSendBonus(m_PointsToGive);
 
             PlayAudioClip();
-            DeActivate();
+
+            if (m_ResetOnCompleted)
+                Restart();
+            else
+                DeActivate();
         }
     }
 
@@ -61,6 +73,7 @@ public class BonusComponentBase : MonoBehaviour
     public void DeActivate()
     {
         m_IsActivated = false;
+        m_ReceivedToys.Clear();
 
         if (m_Toys != null && m_Toys.Length > 0)
         {
@@ -71,17 +84,18 @@ public class BonusComponentBase : MonoBehaviour
         }
     }
 
+    public void Restart()
+    {
+        DeActivate();
+        Activate();
+    }
+
     private void OnReceivePoints(ToyBase Toy, int Points)
     {
         if(!m_ReceivedToys.Contains(Toy))
             m_ReceivedToys.Add(Toy);
     }
 
-    public void ResetComponent()
-    {
-        m_IsActivated = false;
-        m_ReceivedToys.Clear();
-    }
 
     public void PlayAudioClip()
     {

@@ -1,23 +1,33 @@
 using System;
 using UnityEngine;
 
+[RequireComponent(typeof(AudioSource))]
 public abstract class ToyBase : MonoBehaviour
 {
+    [Header("Difficulty")]
+    [SerializeField]
+    protected bool m_ResetOnBallReset;
+    [SerializeField]
+    protected bool m_ResetOnCompleted;
+
     [Header("Score")]
     [SerializeField]
-    private int m_Points = 100;
+    protected int m_Points = 100;
 
     [Header("Audio")]
     [SerializeField]
-    private AudioClip m_AudioClip;
+    protected AudioClip m_AudioClip;
 
-    private AudioSource m_AudioSource;
+    protected AudioSource m_AudioSource;
 
     protected bool m_IsActivated;
 
     public Action<ToyBase, int> OnSendPoints;
 
     public bool IsActivated { get => m_IsActivated; }
+    public bool RestartOnBallReset { get => m_ResetOnBallReset; }
+    public bool RestartOnCompleted { get => m_ResetOnCompleted; }
+
 
     protected virtual void Start()
     {
@@ -34,7 +44,7 @@ public abstract class ToyBase : MonoBehaviour
 
     public abstract void DeActivate();
 
-    public abstract void ResetToy();
+    public abstract void Restart();
 
     public void PlayAudioClip()
     {

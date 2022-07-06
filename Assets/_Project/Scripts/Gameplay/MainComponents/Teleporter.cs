@@ -9,7 +9,7 @@ public class Teleporter : ToyComponentBase
     {
         base.Start();
 
-        m_IsActive = true;
+        m_IsActivated = true;
     }
 
     protected virtual void OnTriggerEnter(Collider other)
@@ -17,8 +17,11 @@ public class Teleporter : ToyComponentBase
         if (!other.CompareTag(m_CompareTag))
             return;
 
-        if (!m_IsActive)
+        if (!m_IsActivated)
             return;
+
+        if (OnHit != null)
+            OnHit(this);
 
         PlayAudioClip();
 

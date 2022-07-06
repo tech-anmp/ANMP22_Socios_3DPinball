@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8892252452499981997}
   - component: {fileID: 5532808392719239432}
   - component: {fileID: 7722702091134991810}
-  - component: {fileID: 621572906}
+  - component: {fileID: 7948187755652211366}
   m_Layer: 0
   m_Name: TouchdownCorner02
   m_TagString: Untagged
@@ -82,7 +82,7 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &621572906
+--- !u!64 &7948187755652211366
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
