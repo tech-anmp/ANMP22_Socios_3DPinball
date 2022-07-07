@@ -12,6 +12,8 @@ public abstract class ToyBase : MonoBehaviour
 
     [Header("Score")]
     [SerializeField]
+    protected bool m_SendPoints = true;
+    [SerializeField]
     protected int m_Points = 100;
 
     [Header("Audio")]

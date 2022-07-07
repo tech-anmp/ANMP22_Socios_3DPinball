@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,12 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
     [SerializeField]
     private float m_GizmosSize = 0.05f;
 
+    [Header("Delay")]
+    [SerializeField]
+    private bool m_DelayRestart;
+    [SerializeField]
+    private float m_DelayRestartTime = 0.5f;
+
     protected List<ToyComponentBase> m_HittedComponents = new List<ToyComponentBase>();
 
     protected virtual void Update()
@@ -19,8 +26,11 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
         // Check if all bumpers were hitted, if so, then send points and deactivate
         if (m_HittedComponents.Count == GetToyComponents().Length)
         {
-            SendPoints();
-            PlayAudioClip();
+            if (m_SendPoints)
+            {
+                SendPoints();
+                PlayAudioClip();
+            }
 
             if (m_ResetOnCompleted)
                 Restart();
@@ -61,8 +71,13 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
 
     public override void Restart()
     {
-        DeActivate();
-        Activate();
+        if (m_DelayRestart)
+            StartCoroutine(DelayedRestart());
+        else
+        {
+            DeActivate();
+            Activate();
+        }
     }
 
     protected virtual void OnToyComponentHitted(ToyComponentBase ToyComponent)
@@ -87,6 +102,13 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
     }
 
     public abstract T[] GetToyComponents();
+
+    private IEnumerator DelayedRestart()
+    {
+        DeActivate();
+        yield return new WaitForSeconds(m_DelayRestartTime);
+        Activate();
+    }
 
     protected void OnDrawGizmosSelected()
     {

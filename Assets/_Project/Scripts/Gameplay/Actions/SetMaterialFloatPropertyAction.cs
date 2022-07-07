@@ -15,10 +15,11 @@ public class SetMaterialFloatPropertyAction : MonoBehaviour, IActionBase
     [SerializeField]
     private float m_SetValue = 1;
 
+    [Header("Delay")]
     [SerializeField]
     private bool m_DelayStop;
     [SerializeField]
-    private float m_DelayStopTime = 1;
+    private float m_DelayStopTime = 0.5f;
 
     private Material m_MaterialInstance;
 

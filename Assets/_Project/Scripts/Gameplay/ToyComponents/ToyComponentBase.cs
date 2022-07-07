@@ -17,10 +17,6 @@ public class ToyComponentBase : MonoBehaviour
     [SerializeField]
     protected AudioClip m_AudioClip;
 
-    //[Header("Difficulty")]
-    //[SerializeField]
-    //private bool m_DisableOnHit;
-
     protected bool m_IsActivated;
     protected AudioSource m_AudioSource;
     protected IActionBase[] m_Actions;

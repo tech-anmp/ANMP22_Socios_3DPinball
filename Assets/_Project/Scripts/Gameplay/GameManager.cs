@@ -116,6 +116,9 @@ public class GameManager : MonoBehaviour
                 m_ActiveableWalls[i].DeActivate();
             }
         }
+
+        m_LeftFlipper.FlipBack();
+        m_RightFlipper.FlipBack();
     }
     private void InitializeBonus()
     {
