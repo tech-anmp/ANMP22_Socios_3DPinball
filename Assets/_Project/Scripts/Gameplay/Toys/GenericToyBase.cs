@@ -95,7 +95,8 @@ public abstract class GenericToyBase<T> : ToyBase where T : ToyComponentBase
             for (int i = 0; i < GetToyComponents().Length; i++)
             {
                 Gizmos.color = m_GizmosColor;
-                Gizmos.DrawSphere(GetToyComponents()[i].transform.position, m_GizmosSize);
+                if (GetToyComponents()[i] != null)
+                    Gizmos.DrawSphere(GetToyComponents()[i].transform.position, m_GizmosSize);
             }
         }
     }
