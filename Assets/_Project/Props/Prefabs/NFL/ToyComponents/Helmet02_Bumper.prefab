@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Property: _UseEmissive
   m_DefaultValue: 0
   m_SetValue: 1
+  m_DelayStop: 0
+  m_DelayStopTime: 0.5
 --- !u!136 &3929106939413636344
 CapsuleCollider:
   m_ObjectHideFlags: 0
